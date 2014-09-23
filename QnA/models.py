@@ -11,103 +11,99 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-class Test(models.Model):
-    number = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=100, blank=True)
+class Answers(models.Model):
+    author = models.CharField(max_length=30)
+    answerid = models.BigIntegerField(primary_key=True)
+    body = models.CharField(max_length=100, blank=True)
+    timeofpost = models.DateTimeField()
+    quesid = models.ForeignKey('Questions', db_column='quesid')
+    authid = models.BigIntegerField()
     class Meta:
         managed = False
-        db_table = 'TEST'
+        db_table = 'answers'
 
-class Test2(models.Model):
-    number = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+class Comments(models.Model):
+    author = models.CharField(max_length=30)
+    commentid = models.BigIntegerField(primary_key=True)
+    timeofcomment = models.DateTimeField()
+    authorid = models.ForeignKey('User', db_column='authorid')
+    ansid = models.ForeignKey(Answers, db_column='ansid')
     class Meta:
         managed = False
-        db_table = 'TEST2'
+        db_table = 'comments'
 
-class AuthGroup(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(unique=True, max_length=80)
+
+class QuestionTopic(models.Model):
+    quesid = models.ForeignKey('Questions', db_column='quesid')
+    topicid = models.ForeignKey('Topic', db_column='topicid')
+    qtid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'auth_group'
+        db_table = 'question_topic'
 
-class AuthGroupPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
-    group = models.ForeignKey(AuthGroup)
-    permission = models.ForeignKey('AuthPermission')
+class Questions(models.Model):
+    author = models.CharField(max_length=30)
+    qid = models.BigIntegerField(primary_key=True)
+    explanation = models.CharField(max_length=100, blank=True)
+    body = models.CharField(max_length=100)
+    time = models.DateTimeField()
+    authorid = models.BigIntegerField()
     class Meta:
         managed = False
-        db_table = 'auth_group_permissions'
+        db_table = 'questions'
 
-class AuthPermission(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=50)
-    content_type = models.ForeignKey('DjangoContentType')
-    codename = models.CharField(max_length=100)
+class Topic(models.Model):
+    topicid = models.BigIntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
     class Meta:
         managed = False
-        db_table = 'auth_permission'
+        db_table = 'topic'
 
-class AuthUser(models.Model):
-    id = models.IntegerField(primary_key=True)
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField()
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=30)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.CharField(max_length=75)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
+class User(models.Model):
+    name = models.CharField(max_length=30)
+    loginemail = models.CharField(primary_key=True, max_length=30)
+    password = models.CharField(max_length=10)
+    numfollowers = models.BigIntegerField(blank=True, null=True)
     class Meta:
         managed = False
-        db_table = 'auth_user'
+        db_table = 'user'
 
-class AuthUserGroups(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(AuthUser)
-    group = models.ForeignKey(AuthGroup)
+class UserFavAnswer(models.Model):
+    userid = models.ForeignKey(User, db_column='userid')
+    ansid = models.ForeignKey(Answers, db_column='ansid')
+    ufaid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'auth_user_groups'
+        db_table = 'user_fav_answer'
 
-class AuthUserUserPermissions(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(AuthUser)
-    permission = models.ForeignKey(AuthPermission)
+class UserFavQuestion(models.Model):
+    userid = models.ForeignKey(User, db_column='userid')
+    qid = models.ForeignKey(Questions, db_column='qid')
+    ufqid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'auth_user_user_permissions'
+        db_table = 'user_fav_question'
 
-class DjangoAdminLog(models.Model):
-    id = models.IntegerField(primary_key=True)
-    action_time = models.DateTimeField()
-    user = models.ForeignKey(AuthUser)
-    content_type = models.ForeignKey('DjangoContentType', blank=True, null=True)
-    object_id = models.TextField(blank=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.IntegerField()
-    change_message = models.TextField()
+class UserFollowQuestion(models.Model):
+    userid = models.ForeignKey(User, db_column='userid')
+    qid = models.ForeignKey(Questions, db_column='qid')
+    ufqid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'django_admin_log'
+        db_table = 'user_follow_question'
 
-class DjangoContentType(models.Model):
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
+class UserFollowTopic(models.Model):
+    user = models.ForeignKey(User)
+    topic = models.ForeignKey(Topic)
+    uftid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'django_content_type'
+        db_table = 'user_follow_topic'
 
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
+class UserFollowUser(models.Model):
+    follower = models.ForeignKey(User,related_name="follower")
+    followed = models.ForeignKey(User,related_name="followed")
+    ufuid = models.BigIntegerField(primary_key=True)
     class Meta:
         managed = False
-        db_table = 'django_session'
-
+        db_table = 'user_follow_user'
