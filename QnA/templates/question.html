@@ -1,0 +1,17 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <title>Sawaal Jawaab - A place for all your questions</title>
+</head>
+<body>
+    <h4>{{question.author}}</h4>
+    <p>{{question.time}} {{question.explanation}}</p>
+    {% for answer in answers %}
+    <h3>{{ answer.author }}</h3>
+    <p>{{answer.timeofpost}}</p>
+    <p>{{answer.body}}</p>
+    {% endfor %}
+</body>

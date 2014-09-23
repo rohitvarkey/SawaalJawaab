@@ -10,4 +10,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$',include('QnA.urls')),
+    url(r'^qna/',include('QnA.urls')),
 )
