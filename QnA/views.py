@@ -14,7 +14,7 @@ def question_view(request,questionId):
 
 def user_profile(request,username):
     user = get_object_or_404(User,name=username)
-    return render(request,'user_profile.html',{'user':user})
+    return render(request,'userProfile.html',{'user':user})
 
 def topic_view(request,topicId):
     topic = get_object_or_404(Topic,topicid=topicId)

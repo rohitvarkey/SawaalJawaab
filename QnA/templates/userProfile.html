@@ -1,9 +1,9 @@
-
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <body font="Comic Sans">
 <style>
-  body {font-family:"Book Antiqua"; background-color:#000000; color:#111; padding-left:15%; padding-right:15%; background-image:url('nybackground.jpg');}
+  body {font-family:"Book Antiqua"; background-color:#000000; color:#111; padding-left:15%; padding-right:15%; background-image:url('/static/nybackground.jpg');}
 th,td {
 	
     padding: 20px;
@@ -15,7 +15,7 @@ table { background-color:#d4d4d4;  }
 <table>
 <tr>
 <td>
- <p><img src="index.jpeg" align="left" alt="HTML5 Icon"  style="width:304px;height:228px" border="1"> <br></p>
+    <p><img src="/static/index.jpeg" align="left" alt="HTML5 Icon"  style="width:304px;height:228px" border="1"> <br></p>
 </td>
 <td>
  <p>  John Doe </p>
