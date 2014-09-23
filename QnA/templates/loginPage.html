@@ -4,11 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
     <title>Sawaal Jawaab - A place for all your questions</title>
 </head>
 <body>
-    <h1>
-        Welcome!
-    </h1>
+    <div class="container" align="center">
+        <div class="row">
+            <h1>Welcome!</h1>
+        </div>
+        <div class="container" align="center">
+            <form role="form" id="forms">
+                <h3>Sign In</h3>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Username">
+                </div>
+                <div class="form-group">
+                <input type="password" class="form-control"  placeholder="Email address">
+                </div>
+                <button class="btn btn-primary" type="submit">Sign In</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
