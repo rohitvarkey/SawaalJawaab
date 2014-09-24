@@ -28,3 +28,6 @@ def topic_view(request,topicId):
             questions.append(Questions.objects.get(qid=questionTopic.quesid.qid))
     print questions
     return render(request,'topic.html',{'questions':questions,'topic':topic})
+
+def base_view(request):
+    return render(request,'sample.html')
