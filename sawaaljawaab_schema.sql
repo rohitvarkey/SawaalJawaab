@@ -6,10 +6,11 @@ CREATE TABLE `answers` (
   `body` varchar(100) DEFAULT NULL,
   `timeofpost` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `quesid` bigint(20) NOT NULL,
-  `authid` bigint(20) NOT NULL,
+  `authid` varchar(30) NOT NULL,
   PRIMARY KEY (`answerid`),
   KEY `fk11` (`quesid`),
-  CONSTRAINT `fk11` FOREIGN KEY (`quesid`) REFERENCES `questions` (`qid`)
+  CONSTRAINT `fk11` FOREIGN KEY (`quesid`) REFERENCES `questions` (`qid`),
+  constraint `fka1` foreign key (`authid`) references user(`loginemail`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
  CREATE TABLE `user` (
@@ -26,6 +27,7 @@ CREATE TABLE `comments` (
   `timeofcomment` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `authorid` varchar(30) NOT NULL,
   `ansid` bigint(20) NOT NULL,
+  `commentbody` varchar(150) NOT NULL,
   PRIMARY KEY (`commentid`),
   KEY `fk21` (`authorid`),
   KEY `fk22` (`ansid`),
@@ -115,3 +117,41 @@ CREATE TABLE `user_fav_answer` (
   CONSTRAINT `fk101` FOREIGN KEY (`userid`) REFERENCES `user` (`loginemail`),
   CONSTRAINT `fk09` FOREIGN KEY (`ansid`) REFERENCES `answers` (`answerid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `message` (
+  `messageid` bigint(20) NOT NULL,
+  `senderid` varchar(30) NOT NULL,
+  `recvid` varchar(30) NOT NULL,
+  `body` varchar(150) NOT NULL,
+  PRIMARY KEY (`messageid`),
+  KEY `fkm1` (`senderid`),
+  KEY `fkm2` (`recvid`),
+  CONSTRAINT `fkm1` FOREIGN KEY (`senderid`) REFERENCES `user` (`loginemail`),
+  CONSTRAINT `fkm2` FOREIGN KEY (`recvid`) REFERENCES `user` (`loginemail`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `notifs` (
+  `notifid` bigint(20) NOT NULL,
+  `answernotifflag` tinyint(4) DEFAULT NULL,
+  `answerid` bigint(20) DEFAULT NULL,
+  `qsnotifflag` tinyint(4) DEFAULT NULL,
+  `quesid` bigint(20) DEFAULT NULL,
+  `commentnotifflag` tinyint(4) DEFAULT NULL,
+  `commentid` bigint(20) DEFAULT NULL,
+  `follownotifflag` tinyint(4) DEFAULT NULL,
+  `followid` varchar(30) DEFAULT NULL,
+  `messagenotifflag` tinyint(4) DEFAULT NULL,
+  `messageid` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`notifid`),
+  KEY `fkn1` (`answerid`),
+  KEY `fkn2` (`quesid`),
+  KEY `fkn3` (`commentid`),
+  KEY `fkn4` (`followid`),
+  KEY `fkn5` (`messageid`),
+  CONSTRAINT `fkn1` FOREIGN KEY (`answerid`) REFERENCES `answers` (`answerid`),
+  CONSTRAINT `fkn2` FOREIGN KEY (`quesid`) REFERENCES `questions` (`qid`),
+  CONSTRAINT `fkn3` FOREIGN KEY (`commentid`) REFERENCES `comments` (`commentid`),
+  CONSTRAINT `fkn4` FOREIGN KEY (`followid`) REFERENCES `user` (`loginemail`),
+  CONSTRAINT `fkn5` FOREIGN KEY (`messageid`) REFERENCES `message` (`messageid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
