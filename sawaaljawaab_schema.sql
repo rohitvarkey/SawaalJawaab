@@ -10,7 +10,7 @@ CREATE TABLE `answers` (
   PRIMARY KEY (`answerid`),
   KEY `fk11` (`quesid`),
   CONSTRAINT `fk11` FOREIGN KEY (`quesid`) REFERENCES `questions` (`qid`),
-  constraint 'fka1' foreign key ('authid') references user('loginemail')
+  constraint `fka1` foreign key (`authid`) references user(`loginemail`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
  CREATE TABLE `user` (
@@ -27,7 +27,7 @@ CREATE TABLE `comments` (
   `timeofcomment` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `authorid` varchar(30) NOT NULL,
   `ansid` bigint(20) NOT NULL,
-  'commentbody' varchar(150) NOT NULL,
+  `commentbody` varchar(150) NOT NULL,
   PRIMARY KEY (`commentid`),
   KEY `fk21` (`authorid`),
   KEY `fk22` (`ansid`),
