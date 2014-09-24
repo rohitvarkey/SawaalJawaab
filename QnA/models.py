@@ -21,6 +21,8 @@ class Answers(models.Model):
     class Meta:
         managed = False
         db_table = 'answers'
+    def __str__(self):
+        return self.body[:20]
 
 class Comments(models.Model):
     author = models.CharField(max_length=30)
@@ -41,6 +43,8 @@ class QuestionTopic(models.Model):
         managed = False
         db_table = 'question_topic'
 
+    def __str__(self):
+        return self.quesid.explanation + self.topicid.name
 class Questions(models.Model):
     author = models.CharField(max_length=30)
     qid = models.BigIntegerField(primary_key=True)
@@ -51,6 +55,8 @@ class Questions(models.Model):
     class Meta:
         managed = False
         db_table = 'questions'
+    def __str__(self):
+        return self.explanation[:20]
 
 class Topic(models.Model):
     topicid = models.BigIntegerField(primary_key=True)
@@ -59,6 +65,8 @@ class Topic(models.Model):
         managed = False
         db_table = 'topic'
 
+    def __str__(self):
+        return self.name
 class User(models.Model):
     name = models.CharField(max_length=30)
     loginemail = models.CharField(primary_key=True, max_length=30)
@@ -67,7 +75,9 @@ class User(models.Model):
     class Meta:
         managed = False
         db_table = 'user'
-
+    
+    def __str__(self):
+        return self.loginemail
 class UserFavAnswer(models.Model):
     userid = models.ForeignKey(User, db_column='userid')
     ansid = models.ForeignKey(Answers, db_column='ansid')
@@ -75,7 +85,9 @@ class UserFavAnswer(models.Model):
     class Meta:
         managed = False
         db_table = 'user_fav_answer'
-
+   
+    def __str__(self):
+        return self.userid.loginemail + self.ansid.body[:20]
 class UserFavQuestion(models.Model):
     userid = models.ForeignKey(User, db_column='userid')
     qid = models.ForeignKey(Questions, db_column='qid')
@@ -83,6 +95,8 @@ class UserFavQuestion(models.Model):
     class Meta:
         managed = False
         db_table = 'user_fav_question'
+    def __str__(self):
+        return self.userid.loginemail + self.qid.explanation[:20]
 
 class UserFollowQuestion(models.Model):
     userid = models.ForeignKey(User, db_column='userid')
@@ -92,6 +106,8 @@ class UserFollowQuestion(models.Model):
         managed = False
         db_table = 'user_follow_question'
 
+    def __str__(self):
+        return self.userid.loginemail + " " +self.qid.explanation[:20]
 class UserFollowTopic(models.Model):
     user = models.ForeignKey(User)
     topic = models.ForeignKey(Topic)
@@ -100,6 +116,8 @@ class UserFollowTopic(models.Model):
         managed = False
         db_table = 'user_follow_topic'
 
+    def __str__(self):
+        return self.user.loginemail +" " +self.topic.name
 class UserFollowUser(models.Model):
     follower = models.ForeignKey(User,related_name="follower")
     followed = models.ForeignKey(User,related_name="followed")
@@ -107,3 +125,5 @@ class UserFollowUser(models.Model):
     class Meta:
         managed = False
         db_table = 'user_follow_user'
+    def __str__(self):
+        return self.follower.loginemail +" "+ self.followed.loginemail

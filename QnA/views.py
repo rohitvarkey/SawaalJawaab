@@ -30,4 +30,4 @@ def topic_view(request,topicId):
     return render(request,'topic.html',{'questions':questions,'topic':topic})
 
 def base_view(request):
-    return render(request,'sample.html')
+    return render(request,'base.html')
