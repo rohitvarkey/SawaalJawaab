@@ -27,6 +27,7 @@ CREATE TABLE `comments` (
   `timeofcomment` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `authorid` varchar(30) NOT NULL,
   `ansid` bigint(20) NOT NULL,
+  'commentbody' varchar(150) NOT NULL,
   PRIMARY KEY (`commentid`),
   KEY `fk21` (`authorid`),
   KEY `fk22` (`ansid`),
