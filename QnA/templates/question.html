@@ -30,6 +30,18 @@
         <div class="well">
             <h5>{{ answer.author }} on {{answer.createdTime}}</h6>
             <p>{{answer.body}}</p>
+            {% for comment in answer.comments %}
+                <div class="well">
+                    <h5>{{comment.author.firstName}} {{comment.author.lastName}}</h5>
+                    <p>{{comment.body}}</p>
+                </div>
+            {% endfor %}
+        <form id="commentForm" action="/qna/comments/{{answer.answerid}}/" method="post">
+            {% csrf_token %}
+            {{commentForm|bootstrap}}
+            <button class="btn btn btn-primary" style="float-right:true" type="submit">Add Comment!</button>
+        </form>
+
         </div>
     {% endfor %}
     </div>

@@ -30,10 +30,14 @@ def question_view(request,questionId):
         answers = Answer.objects.filter(quesid=questionId)
         topics = QuestionTopic.objects.filter(question=question)
         form = AnswerForm()
+        commentForm = CommentForm()
+        for answer in answers:
+            answer.comments = Comment.objects.filter(ansid=answer.answerid)
         return render(request,'question.html',{'question':question,
                                                'answers':answers,
                                                'topics':topics,
                                                'form':form,
+                                               'commentForm':commentForm,
                                                })
     else:
         form = AnswerForm(request.POST)
@@ -120,3 +124,14 @@ def add_question(request):
     return render(request,'add_question.html', {
         'form':form
         })
+
+def add_comment(request,answerId):
+    form = CommentForm(request.POST)
+    if request.method == 'GET' or not form.is_valid():
+        raise Http404
+    author = get_object_or_404(UserProfile,user=request.user)
+    answer = get_object_or_404(Answer,answerid=answerId)
+    body = form.cleaned_data['body']
+    comment = Comment.objects.create(author=author,body=body,ansid=answer)
+    return redirect("question_view",answer.quesid.qid)
+

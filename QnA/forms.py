@@ -27,3 +27,8 @@ class AnswerForm(forms.Form):
             required=True,
             label="Answer",
             )
+class CommentForm(forms.Form):
+    body = forms.CharField(
+            required=True,
+            label="Comment"
+            )
