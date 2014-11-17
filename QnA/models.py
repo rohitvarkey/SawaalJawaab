@@ -1,129 +1,116 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Remove `managed = False` lines if you wish to allow Django to create and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
-#
-# Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
-# into your database.
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
-class Answers(models.Model):
-    author = models.CharField(max_length=30)
-    answerid = models.BigIntegerField(primary_key=True)
-    body = models.CharField(max_length=100, blank=True)
-    timeofpost = models.DateTimeField()
-    quesid = models.ForeignKey('Questions', db_column='quesid')
-    authid = models.BigIntegerField()
-    class Meta:
-        managed = False
-        db_table = 'answers'
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    about = models.CharField(max_length=100)
+    numfollowers = models.BigIntegerField(blank=True, default = 0) 
+    def __str__(self):
+        return self.user.username
+
+class Answer(models.Model):
+    author = models.ForeignKey('UserProfile')
+    answerid = models.AutoField(primary_key=True)
+    body = models.CharField(max_length=4000)
+    createdTime = models.DateTimeField(auto_now_add=True)
+    lastModTime = models.DateTimeField(auto_now=True)
+    quesid = models.ForeignKey('Question')
     def __str__(self):
         return self.body[:20]
 
-class Comments(models.Model):
-    author = models.CharField(max_length=30)
-    commentid = models.BigIntegerField(primary_key=True)
-    timeofcomment = models.DateTimeField()
-    authorid = models.ForeignKey('User', db_column='authorid')
-    ansid = models.ForeignKey(Answers, db_column='ansid')
-    class Meta:
-        managed = False
-        db_table = 'comments'
-
+class Comment(models.Model):
+    author = models.ForeignKey('UserProfile')
+    commentid = models.AutoField(primary_key=True)
+    body = models.CharField(max_length=4000)
+    timeofcomment = models.DateTimeField(auto_now_add=True)
+    ansid = models.ForeignKey('Answer')
 
 class QuestionTopic(models.Model):
-    quesid = models.ForeignKey('Questions', db_column='quesid')
-    topicid = models.ForeignKey('Topic', db_column='topicid')
-    qtid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'question_topic'
-
+    quesid = models.ForeignKey('Question')
+    topicid = models.ForeignKey('Topic')
+    qtid = models.AutoField(primary_key=True)
     def __str__(self):
         return self.quesid.explanation + self.topicid.name
-class Questions(models.Model):
-    author = models.CharField(max_length=30)
-    qid = models.BigIntegerField(primary_key=True)
+
+class Question(models.Model):
+    author = models.ForeignKey('UserProfile')
+    qid = models.AutoField(primary_key=True)
     explanation = models.CharField(max_length=100, blank=True)
-    body = models.CharField(max_length=100)
-    time = models.DateTimeField()
-    authorid = models.BigIntegerField()
-    class Meta:
-        managed = False
-        db_table = 'questions'
+    body = models.CharField(max_length=1000)
+    timeCreated = models.DateTimeField(auto_now_add=True)
+    lastModified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.explanation[:20]
 
 class Topic(models.Model):
-    topicid = models.BigIntegerField(primary_key=True)
-    name = models.CharField(max_length=30)
-    class Meta:
-        managed = False
-        db_table = 'topic'
-
+    topicid = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
     def __str__(self):
         return self.name
-class User(models.Model):
-    name = models.CharField(max_length=30)
-    loginemail = models.CharField(primary_key=True, max_length=30)
-    password = models.CharField(max_length=10)
-    numfollowers = models.BigIntegerField(blank=True, null=True)
-    class Meta:
-        managed = False
-        db_table = 'user'
-    
-    def __str__(self):
-        return self.loginemail
+
 class UserFavAnswer(models.Model):
-    userid = models.ForeignKey(User, db_column='userid')
-    ansid = models.ForeignKey(Answers, db_column='ansid')
-    ufaid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'user_fav_answer'
-   
+    userid = models.ForeignKey('UserProfile')
+    ansid = models.ForeignKey('Answer')
+    ufaid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.userid.loginemail + self.ansid.body[:20]
+        return self.userid.username + self.ansid.body[:20]
+
 class UserFavQuestion(models.Model):
-    userid = models.ForeignKey(User, db_column='userid')
-    qid = models.ForeignKey(Questions, db_column='qid')
-    ufqid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'user_fav_question'
+    userid = models.ForeignKey('UserProfile')
+    qid = models.ForeignKey('Question')
+    ufqid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.userid.loginemail + self.qid.explanation[:20]
+        return self.userid.username + self.qid.explanation[:20]
 
 class UserFollowQuestion(models.Model):
-    userid = models.ForeignKey(User, db_column='userid')
-    qid = models.ForeignKey(Questions, db_column='qid')
-    ufqid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'user_follow_question'
-
+    userid = models.ForeignKey('UserProfile')
+    qid = models.ForeignKey('Question')
+    ufqid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.userid.loginemail + " " +self.qid.explanation[:20]
+        return self.userid.username + " " +self.qid.explanation[:20]
+
 class UserFollowTopic(models.Model):
-    user = models.ForeignKey(User)
-    topic = models.ForeignKey(Topic)
-    uftid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'user_follow_topic'
+    user = models.ForeignKey('UserProfile')
+    topic = models.ForeignKey('Topic')
+    uftid = models.AutoField(primary_key=True)
+    def __str__(self):
+        return self.user.username +" " +self.topic.name
 
-    def __str__(self):
-        return self.user.loginemail +" " +self.topic.name
 class UserFollowUser(models.Model):
-    follower = models.ForeignKey(User,related_name="follower")
-    followed = models.ForeignKey(User,related_name="followed")
-    ufuid = models.BigIntegerField(primary_key=True)
-    class Meta:
-        managed = False
-        db_table = 'user_follow_user'
+    follower = models.ForeignKey('UserProfile',related_name="follower")
+    followed = models.ForeignKey('UserProfile',related_name="followed")
+    ufuid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.follower.loginemail +" "+ self.followed.loginemail
+        return self.follower.username +"->"+ self.followed.username
+
+class UserUpvoteQuestion(models.Model):
+    user = models.ForeignKey('UserProfile')
+    question = models.ForeignKey('Question')
+    def __str__(self):
+        return self.user.username + ":" + self.question.explanation[:20]
+
+class UserDownvoteQuestion(models.Model):
+    user = models.ForeignKey('UserProfile')
+    question = models.ForeignKey('Question')
+    def __str__(self):
+        return self.user.username + ":" + self.question.explanation[:20]
+
+class UserUpvoteAnswer(models.Model):
+    user = models.ForeignKey('UserProfile')
+    answer = models.ForeignKey('Answer')
+    def __str__(self):
+        return self.user.username + ":" + self.answer.body[:20]
+
+class UserDownvoteAnswer(models.Model):
+    user = models.ForeignKey('UserProfile')
+    answer = models.ForeignKey('Answer')
+    def __str__(self):
+        return self.user.username + ":" + self.answer.body[:20]
+
+class UserUpvoteComment(models.Model):
+    user = models.ForeignKey('UserProfile')
+    comment = models.ForeignKey('Comment')
+    def __str__(self):
+        return self.user.username + ":" + self.comment.body[:20]
