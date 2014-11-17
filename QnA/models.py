@@ -30,11 +30,17 @@ class Comment(models.Model):
     ansid = models.ForeignKey('Answer')
 
 class QuestionTopic(models.Model):
-    quesid = models.ForeignKey('Question')
-    topicid = models.ForeignKey('Topic')
+    question = models.ForeignKey('Question')
+    topic = models.ForeignKey('Topic')
     qtid = models.AutoField(primary_key=True)
     def __str__(self):
         return self.quesid.explanation + self.topicid.name
+
+class Topic(models.Model):
+    topicid = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
 
 class Question(models.Model):
     author = models.ForeignKey('UserProfile')
@@ -45,12 +51,6 @@ class Question(models.Model):
     lastModified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.explanation[:20]
-
-class Topic(models.Model):
-    topicid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    def __str__(self):
-        return self.name
 
 class UserFavAnswer(models.Model):
     userid = models.ForeignKey('UserProfile')

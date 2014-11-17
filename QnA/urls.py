@@ -8,4 +8,6 @@ urlpatterns = patterns('',
         url(r'base/','QnA.views.base_view',name='base'),
         url(r'signup/','QnA.views.signup',name='signup'),
         url(r'logout/','QnA.views.logout_view',name='logout_view'),
+        url(r'addQuestion/','QnA.views.add_question',name='add_question'),
+
 )

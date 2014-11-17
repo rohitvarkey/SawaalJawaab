@@ -1,14 +1,31 @@
 {% extends 'base.html' %}
+{% load bootstrap %}
 {% block title %} SawaalJawaab - {{question.explanation}} {% endblock %}
 
 {% block content %}
     <div class="container">
-        <h2 class="page-header">{{question.explanation}}<button class="btn btn-primary" style="float:right">Answer!</button></h2>
-        <p class="question-meta"> {{question.time}} by<a href="/qna/users/{{question.author.username}}"> {{question.author.firstName}} {{question.author.lastName}}</a></p>
+        <h2 class="page-header">{{question.explanation}}<button class="btn btn-primary" id="answer" style="float:right">Answer!</button></h2>
+        <p class="question-meta"> {{question.time}} by<a href="/qna/users/{{question.author.user}}"> {{question.author.firstName}} {{question.author.lastName}}</a></p>
+    <h5> Topics :
+    {%if topics|length == 0 %}
+        No topics associated
+    {% endif %}
+    {% for topic in topics %}
+        {{topic.name}}
+    {% endfor %}
+    </h5>
     <p>{{question.body}}</p>
     </div>
     <div class="container">
+        <form style="display:none" id="answerForm" action="/qna/questions/{{question.qid}}/" method="post">
+            {% csrf_token %}
+            {{form|bootstrap}}
+            <button class="btn btn btn-primary" type="submit">Add Answer!</button>
+        </form>
     <h3>Answers</h3>
+    {% if answers|length == 0 %}
+        <h5> No answers yet! </h5>
+    {%endif%}
     {% for answer in answers %}
         <div class="well">
             <h5>{{ answer.author }} on {{answer.createdTime}}</h6>
@@ -16,4 +33,14 @@
         </div>
     {% endfor %}
     </div>
+
+    <script>
+    document.getElementById("answer").onclick = function () { 
+        var disp = document.getElementById("answerForm").style.display;
+        if (disp=='block')
+            document.getElementById("answerForm").style.display="none";
+        else
+            document.getElementById("answerForm").style.display="block";
+    };
+    </script>      
 {%endblock%}

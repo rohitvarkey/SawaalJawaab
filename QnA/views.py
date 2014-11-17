@@ -2,6 +2,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.http import Http404
 from django.contrib.auth import authenticate,login,logout
 from QnA.models import *
+from QnA.forms import *
 # Create your views here.
 
 def home(request):
@@ -24,10 +25,32 @@ def home(request):
         return render(request,'loginPage.html')
 
 def question_view(request,questionId):
-    question = get_object_or_404(Question,qid=questionId)
-    answers = Answer.objects.filter(quesid=questionId)
-    return render(request,'question.html',{'question':question,
-                                           'answers':answers})
+    if request.method == 'GET':
+        question = get_object_or_404(Question,qid=questionId)
+        answers = Answer.objects.filter(quesid=questionId)
+        topics = QuestionTopic.objects.filter(question=question)
+        form = AnswerForm()
+        return render(request,'question.html',{'question':question,
+                                               'answers':answers,
+                                               'topics':topics,
+                                               'form':form,
+                                               })
+    else:
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            cleanedData = form.cleaned_data
+            body = cleanedData['body']
+            author = get_object_or_404(UserProfile,user=request.user)
+            question = get_object_or_404(Question,qid=questionId)
+            answer = Answer.objects.create(
+                    author=author,
+                    body=body,
+                    quesid=question
+                    )
+            return redirect(
+                    'question_view',
+                    questionId=question.qid,
+                    )
 
 def user_profile(request,username):
     user = get_object_or_404(User,username=username)
@@ -75,3 +98,25 @@ def signup(request):
 def logout_view(request):
     logout(request)
     return redirect("/")
+
+def add_question(request):
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            cleanedData = form.cleaned_data
+            explanation = cleanedData['explanation']
+            body = cleanedData['body']
+            author = get_object_or_404(UserProfile,user=request.user)
+            question = Question(author=author,explanation=explanation,body=body)
+            question.save()
+            topics = cleanedData['topics'].split('\n')
+            for topic in topics:
+                topicObj, created = Topic.objects.get_or_create(name=topic)
+                QuestionTopics.objects.create(question=question,topic=topicObj)
+            return redirect('question_view',questionId=question.qid)
+    else:
+        form = QuestionForm()
+
+    return render(request,'add_question.html', {
+        'form':form
+        })

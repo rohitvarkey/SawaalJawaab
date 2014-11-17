@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{%load bootstrap %}
+{% block title %} SawaalJawaab - Add a question! {% endblock %}
+
+{% block content %}
+    <div class = "container">
+        <h2> Add a question! </h2>
+        <form action="{% url "QnA.views.add_question" %}" method="post">
+        {% csrf_token %}
+        {{form|bootstrap}}
+        <button class="btn btn-primary btn-lg" type="submit">Add!</button>
+        </form>
+    </div>
+{% endblock %}
