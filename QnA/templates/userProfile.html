@@ -1,72 +1,9 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-<body font="Comic Sans">
-<style>
-  body {font-family:"Book Antiqua"; background-color:#000000; color:#111; padding-left:15%; padding-right:15%; background-image:url('/static/nybackground.jpg');}
-th,td {
-	
-    padding: 20px;
-}
-table { background-color:#d4d4d4;  }
-</style>
-
-
-<table>
-<tr>
-<td>
-    <p><img src="/static/index.jpeg" align="left" alt="HTML5 Icon"  style="width:304px;height:228px" border="1"> <br></p>
-</td>
-<td>
- <p>  John Doe </p>
- <p> johndoe@gmail.com </p>
- <p> "Lorem ipsum"</p>
-</td>
-</tr>
-<hr>
-<tr>
-<td border="1px solid black">
-<h3><u>Feed</u></h3>
- <p> <b> Topics</b> - list of topics </p>
- <p> <b> Followers</b> - 10 </p>
- <p> <b> Questions</b> - 15 </p>
- <p> <b> Answers </b> - 20 </p>
-</td>
-<td>
-<h3> <u> Activity</u></h3>
-<table border="1">
-<tr>
-<td>
-<p> What is the meaning of life? </p>
-<p> Ans: 42!</p>
-</td>
-</tr>
-<tr>
-<td>
-<p> What does Joey love the most? </p>
-<p> Ans: Sandwiches!</p>
-</td>
-</tr>
-<tr>
-<td>
-<p> Which was Harry's first broom? </p>
-<p> Ans: Nimbus 2000 </p>
-</td>
-</tr>
-<tr>
-<td>
-<p> What is the number of Pokemon in the Kanto region? </p>
-<p> Ans: 150. Gotta catch 'em all!</p>
-</td>
-</tr>
-
-</table>
-</td>
-</tr>
-</table>
-
-
-</body>
-
-</html>
-
+{%extends 'base.html'%}
+{%block title%} {{user.name}} - SawaalJawaab{%endblock%}
+{%block content%}
+<div class="container">
+    <h2 class="page-header">{{user.name}}
+    <button class="btn btn-primary" style="float:right">Follow({{user.followed.all|length}})</button>
+</h2>
+</div>
+{%endblock%}
