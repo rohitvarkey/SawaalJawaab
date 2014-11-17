@@ -7,6 +7,7 @@
     <link href="{% static 'css/login.css' %}" rel="stylesheet">
     <title>Sawaal Jawaab - A place for all your questions</title>
 </head>
+
 <body>
     <div class="container" align="center">
         <div class="row">
@@ -23,12 +24,16 @@
                         <h3 class="panel-title">Log In</h3>
                     </div>
                     <div class="panel-body">
-                        <form role="form" id="forms">
+                        {% if failed %}
+                        <h4 style="color:red">Username/Password incorrect</h4>
+                        {% endif %}
+                        <form role="form" id="forms" action="/" method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Username">
+                                <input type="text" class="form-control" name="username" placeholder="Username">
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control"  placeholder="Password">
+                                <input type="password" class="form-control" name="password"  placeholder="Password">
                             </div>
                             <button class="btn btn-primary btn-lg btn-block" type="submit">Log In</button>
                         </form>
@@ -41,15 +46,25 @@
                         <h3 class="panel-title">Sign Up</h3>
                     </div>
                     <div class="panel-body">
-                        <form role="form" id="forms">
+                        <form role="form" id="forms" action="{% url 'QnA.views.signup' %}" method="post">
+                            {% csrf_token %}
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Username">
+                                <input type="text" class="form-control" name="username" placeholder="Username">
                             </div>
                             <div class="form-group">
-                            <input type="password" class="form-control"  placeholder="Password">
+                            <input type="password" class="form-control" name="password" placeholder="Password">
                             </div>
                             <div class="form-group">
-                            <input type="email" class="form-control"  placeholder="Email address">
+                            <input type="email" class="form-control"  name="email" placeholder="Email address">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="firstname" placeholder="First Name">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="lastname" placeholder="Last Name">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="about" placeholder="About">
                             </div>
                             <button class="btn btn-primary btn-lg btn-block" type="submit">Sign Up</button>
                         </form>

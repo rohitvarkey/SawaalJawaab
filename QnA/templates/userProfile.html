@@ -1,9 +1,10 @@
 {%extends 'base.html'%}
-{%block title%} {{user.user.username}} - SawaalJawaab{%endblock%}
+{%block title%} {{user.firstName}} {{user.lastName}} - SawaalJawaab{%endblock%}
 {%block content%}
 <div class="container">
-    <h2 class="page-header">{{user.user.username}}
-    <button class="btn btn-primary" style="float:right">Follow({{user.followed.all|length}})</button>
-</h2>
+    <h2 class="page-header">{{user.firstName}} {{user.lastName}}
+        <button class="btn btn-primary" style="float:right">Follow({{user.followed.all|length}})</button>
+    </h2>
+    <p>{{user.about}}</p>
 </div>
 {%endblock%}

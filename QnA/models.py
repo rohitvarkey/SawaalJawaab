@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    firstName = models.CharField(max_length=100)
+    lastName = models.CharField(max_length=100)
     about = models.CharField(max_length=100)
     numfollowers = models.BigIntegerField(blank=True, default = 0) 
     def __str__(self):
