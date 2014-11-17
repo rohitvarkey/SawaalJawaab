@@ -24,7 +24,7 @@ def home(request):
         return render(request,'loginPage.html')
 
 def question_view(request,questionId):
-    question = get_object_or_404(Questions,qid=questionId)
+    question = get_object_or_404(Question,qid=questionId)
     answers = Answer.objects.filter(quesid=questionId)
     return render(request,'question.html',{'question':question,
                                            'answers':answers})
