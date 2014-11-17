@@ -10,5 +10,6 @@ urlpatterns = patterns('',
         url(r'logout/','QnA.views.logout_view',name='logout_view'),
         url(r'addQuestion/','QnA.views.add_question',name='add_question'),
         url(r'comments/(?P<answerId>[^/]+)/$','QnA.views.add_comment',name='add_comment'),
+        url(r'follow/(?P<username>[^/]+)/$','QnA.views.follow_user',name='follow_user'),
 
 )

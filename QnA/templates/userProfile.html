@@ -3,8 +3,37 @@
 {%block content%}
 <div class="container">
     <h2 class="page-header">{{user.firstName}} {{user.lastName}}
-        <button class="btn btn-primary" style="float:right">Follow({{user.followed.all|length}})</button>
+        {% if follows %}
+        <button class="btn btn-danger" id="follow" style="float:right">Unfollow({{user.followed.all|length}})</button>
+        {% else %}
+            <button class="btn btn-primary" id="follow" style="float:right">Follow({{user.followed.all|length}})</button>
+        {% endif %}
     </h2>
     <p>{{user.about}}</p>
 </div>
+
+<script>
+$(document).ready(function(){
+    var url = '/qna/follow/{{user.user.username}}';
+    var followButton = document.getElementById("follow");
+    followButton.onclick = function() {
+        $.get(
+            url,
+            function(data){
+                var follows = data['follows'];
+                if (follows==false)
+                {
+                    followButton.className = "btn btn-primary";
+                    followButton.textContent = "Follow ("+data['followers']+")";
+                }
+                else
+                {
+                    followButton.className = "btn btn-danger";
+                    followButton.textContent = "Unfollow ("+data['followers']+")";
+                }
+        });
+    };
+});
+</script>
+
 {%endblock%}

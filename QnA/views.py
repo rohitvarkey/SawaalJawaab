@@ -1,6 +1,8 @@
+import json
 from django.shortcuts import render,get_object_or_404,redirect
-from django.http import Http404
+from django.http import Http404,HttpResponse
 from django.contrib.auth import authenticate,login,logout
+from django.views.decorators.csrf import csrf_exempt
 from QnA.models import *
 from QnA.forms import *
 # Create your views here.
@@ -59,7 +61,12 @@ def question_view(request,questionId):
 def user_profile(request,username):
     user = get_object_or_404(User,username=username)
     userProfile = get_object_or_404(UserProfile,user=user)
-    return render(request,'userProfile.html',{'user':userProfile})
+    currentUserProfile = get_object_or_404(UserProfile,user=request.user)
+    follows = UserFollowUser.objects.filter(followed=userProfile,follower=currentUserProfile).exists()
+    return render(request,'userProfile.html',{
+        'user':userProfile,
+        'follows':follows
+        })
 
 def topic_view(request,topicId):
     topic = get_object_or_404(Topic,topicid=topicId)
@@ -135,3 +142,149 @@ def add_comment(request,answerId):
     comment = Comment.objects.create(author=author,body=body,ansid=answer)
     return redirect("question_view",answer.quesid.qid)
 
+def upvote_question(request,questionId):
+    question = get_object_or_404(Question,qid=questionId)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Checking for downvote and resetting in case.
+        downvote=UserDownvoteQuestion.objects.get(user=userProfile,question=question)
+        downvote.delete()
+    except:
+        pass
+    if UserUpvoteQuestion.objects.filter(user=userProfile,question=question).exists():
+        UserUpvoteQuestion.objects.get(user=userProfile,question=question).delete()
+    else:
+        UserUpvoteQuestion.objects.create(user=userProfile,question=question)
+
+def downvote_question(request,questionId):
+    question = get_object_or_404(Question,qid=questionId)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Checking for upvote and resetting in case.
+        upvote=UserUpvoteQuestion.objects.get(user=userProfile,question=question)
+        upvote.delete()
+    except:
+        pass
+    if UserDownvoteQuestion.objects.filter(user=userProfile,question=question).exists():
+        UserDownvoteQuestion.objects.get(user=userProfile,question=question).delete()
+    else:
+        UserDownvoteQuestion.objects.create(user=userProfile,question=question)
+
+def upvote_answer(request,answerId):
+    answer = get_object_or_404(Answer,answerid=answerId)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Checking for downvote and resetting in case.
+        downvote=UserDownvoteAnswer.objects.get(user=userProfile,answer=answer)
+        downvote.delete()
+    except:
+        pass
+    if UserUpvoteAnswer.objects.filter(user=userProfile,answer=answer).exists():
+        UserUpvoteAnswer.objects.get(user=userProfile,answer=answer).delete()
+    else:
+        UserUpvoteAnswer.objects.create(user=userProfile,answer=answer)
+
+def downvote_answer(request,answerId):
+    answer = get_object_or_404(Answer,answerid=answerId)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Checking for upvote and resetting in case.
+        upvote=UserUpvoteAnswer.objects.get(user=userProfile,answer=answer)
+        upvote.delete()
+    except:
+        pass
+    if UserDownvoteAnswer.objects.filter(user=userProfile,answer=answer).exists():
+        UserDownvoteAnswer.objects.get(user=userProfile,answer=answer).delete()
+    else:
+        UserDownvoteAnswer.objects.create(user=userProfile,answer=answer)
+
+def upvote_comment(request,commentID):
+    comment = get_object_or_404(Comment,id=commentID)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    """
+    try:
+        #Checking for downvote and resetting in case.
+        downvote=UserDownvoteAnswer.objects.get(user=userProfile,answer=answer)
+        downvote.delete()
+    except:
+        pass
+    """
+    if UserUpvoteComment.objects.filter(user=userProfile,
+            comment=comment).exists():
+        UserUpvoteComment.objects.get(user=UserProfile,
+                comment=comment).delete()
+    else:
+        UserUpvoteComment.objects.create(user=userProfile,comment=comment)
+
+def favourite_question(request,questionId):
+    question = get_object_or_404(Question,qid=questionId)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Undo if present.
+        favQuestion = UserFavQuestion.objects.get(user=userProfile,question=question)
+        favQuestion.delete()
+    except:
+        UserFavQuestion.objects.create(user=userProfile,question=question)
+
+def favourite_answer(request,answerid):
+    answer = get_object_or_404(Answer,answerid=answerid)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Undo if present.
+        favAnswer = UserFavAnswer.objects.get(user=userProfile,answer=answer)
+        favAnswer.delete()
+    except:
+        UserFavAnswer.objects.create(user=userProfile,answer=answer)
+
+@csrf_exempt
+def follow_user(request,username):
+    print request.user
+    followedUser = get_object_or_404(User,username=username)
+    followedUserProfile = get_object_or_404(UserProfile,user=followedUser)
+    followerUserProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        #Undo if present.
+        follow = UserFollowUser.objects.get(
+                follower=followerUserProfile,
+                followed=followedUserProfile,
+                )
+        print "Deleting"
+        follow.delete()
+        print "Deletion Successful"
+        followers = len(UserFollowUser.objects.filter(followed=followedUserProfile))
+        print "Returning response"
+        return HttpResponse(
+                json.dumps({
+                    'follows':False,
+                    'followers':followers,
+                }),
+            content_type="application/json")
+    except:
+        print "Creating"
+        UserFollowUser.objects.create(
+                follower=followerUserProfile,
+                followed=followedUserProfile,
+                )
+        followers = len(UserFollowUser.objects.filter(followed=followedUserProfile))
+        print followers
+        return HttpResponse(
+                json.dumps(
+                    {'follows':True,
+                    'followers':followers
+                    }),
+                    content_type="application/json")
+
+def follow_topic(request,topicid):
+    topic = get_object_or_404(Topic,topicid=topicid)
+    userProfile = get_object_or_404(UserProfile,user=request.user)
+    try:
+        topicFollow = UserFollowTopic.objects.get(
+                topic=topic,
+                user=userProfile,
+                )
+        topicFollow.delete()
+    except:
+        UserFollowTopic.objects.create(
+                user=userProfile,
+                topic=topic,
+                )

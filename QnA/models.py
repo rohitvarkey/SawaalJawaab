@@ -85,7 +85,7 @@ class UserFollowUser(models.Model):
     followed = models.ForeignKey('UserProfile',related_name="followed")
     ufuid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.follower.username +"->"+ self.followed.username
+        return self.follower.firstName +"->"+ self.followed.firstName
 
 class UserUpvoteQuestion(models.Model):
     user = models.ForeignKey('UserProfile')
