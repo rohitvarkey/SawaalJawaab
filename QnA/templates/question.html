@@ -11,7 +11,7 @@
         No topics associated
     {% endif %}
     {% for topic in topics %}
-        {{topic.name}}
+    <a href="/qna/topic/{{topic.topic.topicid}}">{{topic.topic}}</a>,
     {% endfor %}
     </h5>
     <p>{{question.body}}</p>

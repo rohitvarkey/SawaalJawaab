@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title%} SawaalJawaab - Topics! {%endblock%}
+{% block content %}
+    <div class="container">
+    <h1 class="page-header">Topics!</h1>
+    <h3>Click on a topic to see questions under the topic!</h3> 
+        <ul class="list-group">
+        {%for topic in topics %}
+        <li class="list-group-item"><p><a href="/qna/topic/{{topic.topicid}}">{{topic.name}}</a></p></li>
+        {% endfor %}
+</div>
+{%endblock%}

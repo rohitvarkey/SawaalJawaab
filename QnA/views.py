@@ -32,6 +32,7 @@ def question_view(request,questionId):
         question = get_object_or_404(Question,qid=questionId)
         answers = Answer.objects.filter(quesid=questionId)
         topics = QuestionTopic.objects.filter(question=question)
+        print topics
         form = AnswerForm()
         commentForm = CommentForm()
         for answer in answers:
@@ -68,17 +69,24 @@ def user_profile(request,username):
         'user':userProfile,
         'follows':follows
         })
+
+def all_topics(request):
+    topics = Topic.objects.all()
+    return render(request,'allTopics.html',{
+        'topics':topics
+        })
+
 @login_required
 def topic_view(request,topicId):
     topic = get_object_or_404(Topic,topicid=topicId)
-    questionTopicList = QuestionTopic.objects.filter(topicid=topicId)
+    questionTopicList = QuestionTopic.objects.filter(topic=topicId)
     questions = []
     print questionTopicList
     if questionTopicList is None:
         raise Http404
     else:
         for questionTopic in questionTopicList:
-            questions.append(Question.objects.get(qid=questionTopic.quesid.qid))
+            questions.append(Question.objects.get(qid=questionTopic.question.qid))
     print questions
     return render(request,'topic.html',{'questions':questions,'topic':topic})
 
@@ -124,7 +132,7 @@ def add_question(request):
             topics = cleanedData['topics'].split('\n')
             for topic in topics:
                 topicObj, created = Topic.objects.get_or_create(name=topic)
-                QuestionTopics.objects.create(question=question,topic=topicObj)
+                QuestionTopic.objects.create(question=question,topic=topicObj)
             return redirect('question_view',questionId=question.qid)
     else:
         form = QuestionForm()

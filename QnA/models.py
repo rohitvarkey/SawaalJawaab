@@ -34,7 +34,7 @@ class QuestionTopic(models.Model):
     topic = models.ForeignKey('Topic')
     qtid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.quesid.explanation + self.topicid.name
+        return self.question.explanation + self.topic.name
 
 class Topic(models.Model):
     topicid = models.AutoField(primary_key=True)
