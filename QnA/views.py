@@ -35,6 +35,8 @@ def question_view(request,questionId):
         print topics
         form = AnswerForm()
         commentForm = CommentForm()
+        userProf = UserProfile.objects.get(user=request.user)
+        fav = UserFavQuestion.objects.filter(user=userProf).exists()
         for answer in answers:
             answer.comments = Comment.objects.filter(ansid=answer.answerid)
         return render(request,'question.html',{'question':question,
@@ -42,6 +44,7 @@ def question_view(request,questionId):
                                                'topics':topics,
                                                'form':form,
                                                'commentForm':commentForm,
+                                               'fav':fav,
                                                })
     else:
         form = AnswerForm(request.POST)
@@ -232,8 +235,14 @@ def favourite_question(request,questionId):
         #Undo if present.
         favQuestion = UserFavQuestion.objects.get(user=userProfile,question=question)
         favQuestion.delete()
+        print "Unfav"
+        return HttpResponse(json.dumps({'fav':False}),
+                content_type="application/json")
     except:
         UserFavQuestion.objects.create(user=userProfile,question=question)
+        print "Fav"
+        return HttpResponse(json.dumps({'fav':True}),
+               content_type="application/json")
 
 @login_required
 def favourite_answer(request,answerid):

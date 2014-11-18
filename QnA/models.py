@@ -53,22 +53,22 @@ class Question(models.Model):
         return self.explanation[:20]
 
 class UserFavAnswer(models.Model):
-    userid = models.ForeignKey('UserProfile')
-    ansid = models.ForeignKey('Answer')
+    user = models.ForeignKey('UserProfile')
+    answer = models.ForeignKey('Answer')
     ufaid = models.AutoField(primary_key=True)
     def __str__(self):
         return self.userid.username + self.ansid.body[:20]
 
 class UserFavQuestion(models.Model):
-    userid = models.ForeignKey('UserProfile')
-    qid = models.ForeignKey('Question')
+    user = models.ForeignKey('UserProfile')
+    question = models.ForeignKey('Question')
     ufqid = models.AutoField(primary_key=True)
     def __str__(self):
         return self.userid.username + self.qid.explanation[:20]
 
 class UserFollowQuestion(models.Model):
-    userid = models.ForeignKey('UserProfile')
-    qid = models.ForeignKey('Question')
+    user = models.ForeignKey('UserProfile')
+    question = models.ForeignKey('Question')
     ufqid = models.AutoField(primary_key=True)
     def __str__(self):
         return self.userid.username + " " +self.qid.explanation[:20]

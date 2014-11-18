@@ -4,7 +4,13 @@
 
 {% block content %}
     <div class="container">
-        <h2 class="page-header">{{question.explanation}}<button class="btn btn-primary" id="answer" style="float:right">Answer!</button></h2>
+        <h2 class="page-header">{{question.explanation}}
+            <button class="btn btn-primary" id="answer" style="float:right">Answer!</button>
+            {% if fav %}
+            <button class="btn btn-danger" id="fav" style="float:right">Unfavourite!</button></h2>
+        {%else%}
+            <button class="btn btn-info" id="fav" style="float:right">Favourite!</button></h2>
+        {%endif%}
         <p class="question-meta"> {{question.time}} by<a href="/qna/users/{{question.author.user}}"> {{question.author.firstName}} {{question.author.lastName}}</a></p>
     <h5> Topics :
     {%if topics|length == 0 %}
@@ -54,5 +60,33 @@
         else
             document.getElementById("answerForm").style.display="block";
     };
-    </script>      
+    $(document).ready(function(){
+            var url = '/qna/questions/{{question.qid}}/fav/';
+        var favButton = document.getElementById("fav");
+        favButton.onclick = function() {
+            $.get(
+                url,
+                function(data){
+                    var fav = data['fav'];
+                    if (fav==false)
+                    {
+                        favButton.className = "btn btn-info";
+                        favButton.textContent = "Favourite!";
+                    }
+                    else
+                    {
+                        favButton.className = "btn btn-danger";
+                        favButton.textContent = "Unfavourite!";
+                    }
+            });
+        };
+    });
+
+    </script>
+
+    <style>
+    #answer {
+        margin-left:5px;
+    }
+    </style>
 {%endblock%}
