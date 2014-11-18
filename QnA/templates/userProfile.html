@@ -10,6 +10,14 @@
         {% endif %}
     </h2>
     <p>{{user.about}}</p>
+
+    {%for item in qna %}
+    {% if item.answerid %}
+    <p>Added an answer to <a href="/qna/questions/{{item.quesid.qid}}">{{item.quesid}}</a></p>
+    {%else%}
+    <p>Asked <a href="/qna/questions/{{item.qid}}">{{item}}</a></p>
+    {%endif%}
+    {%endfor%}
 </div>
 
 <script>

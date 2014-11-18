@@ -16,7 +16,7 @@ class Answer(models.Model):
     author = models.ForeignKey('UserProfile')
     answerid = models.AutoField(primary_key=True)
     body = models.CharField(max_length=4000)
-    createdTime = models.DateTimeField(auto_now_add=True)
+    timeCreated = models.DateTimeField(auto_now_add=True)
     lastModTime = models.DateTimeField(auto_now=True)
     quesid = models.ForeignKey('Question')
     def __str__(self):

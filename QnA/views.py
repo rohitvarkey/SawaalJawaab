@@ -1,4 +1,5 @@
 import json
+from itertools import chain
 from django.shortcuts import render,get_object_or_404,redirect
 from django.http import Http404,HttpResponse
 from django.contrib.auth import authenticate,login,logout
@@ -26,6 +27,7 @@ def home(request):
         else:
             return render(request,'loginPage.html',{'failed':True})
         return render(request,'loginPage.html')
+
 @login_required
 def question_view(request,questionId):
     if request.method == 'GET':
@@ -68,9 +70,19 @@ def user_profile(request,username):
     userProfile = get_object_or_404(UserProfile,user=user)
     currentUserProfile = get_object_or_404(UserProfile,user=request.user)
     follows = UserFollowUser.objects.filter(followed=userProfile,follower=currentUserProfile).exists()
+    topics = UserFollowTopic.objects.filter(user=userProfile)
+    questions = Question.objects.filter(author=userProfile).order_by('-timeCreated')
+    answers = Answer.objects.filter(author=userProfile).order_by('-timeCreated')
+    qna = sorted(
+               chain(questions,answers),
+                   key=lambda instance: instance.timeCreated,
+                   reverse=True
+                   )
+    print qna 
     return render(request,'userProfile.html',{
         'user':userProfile,
-        'follows':follows
+        'follows':follows,
+        'qna':qna,
         })
 
 def all_topics(request):
