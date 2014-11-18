@@ -78,7 +78,7 @@ class UserFollowTopic(models.Model):
     topic = models.ForeignKey('Topic')
     uftid = models.AutoField(primary_key=True)
     def __str__(self):
-        return self.user.username +" " +self.topic.name
+        return self.user.user.username +" " +self.topic.name
 
 class UserFollowUser(models.Model):
     follower = models.ForeignKey('UserProfile',related_name="follower")

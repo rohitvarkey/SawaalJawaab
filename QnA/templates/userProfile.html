@@ -18,10 +18,14 @@
     {%if topics|length == 0 %}
     No topics followed!
     {%endif%}
-    {% for topic in topics%}    
-        <a href="/qna/topic/{{topic.topicid}}">{{topic.name}}</a>,
+    {% for topic in topics%} 
+        <a href="/qna/topic/{{topic.topic.topicid}}">{{topic.topic.name}}</a>,
     {%endfor%}
+    <h4>Recent Activity</h4>
     </p>
+    {% if qna|length == 0 %}
+    No activity!
+    {% endif %}
     {%for item in qna %}
     {% if item.answerid %}
     <p>Added an answer to <a href="/qna/questions/{{item.quesid.qid}}">{{item.quesid}}</a></p>

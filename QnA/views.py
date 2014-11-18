@@ -96,7 +96,9 @@ def all_topics(request):
 def topic_view(request,topicId):
     topic = get_object_or_404(Topic,topicid=topicId)
     questionTopicList = QuestionTopic.objects.filter(topic=topicId)
-    questions = []
+    questions = [] 
+    currentUserProfile = get_object_or_404(UserProfile,user=request.user)
+    follows = UserFollowTopic.objects.filter(user=currentUserProfile).exists()
     print questionTopicList
     if questionTopicList is None:
         raise Http404
@@ -104,7 +106,11 @@ def topic_view(request,topicId):
         for questionTopic in questionTopicList:
             questions.append(Question.objects.get(qid=questionTopic.question.qid))
     print questions
-    return render(request,'topic.html',{'questions':questions,'topic':topic})
+    return render(request,'topic.html',
+            {'questions':questions,
+            'topic':topic,
+            'follows':follows,
+            })
 
 def base_view(request):
     return render(request,'base.html')
@@ -306,8 +312,8 @@ def follow_user(request,username):
                     }),
                     content_type="application/json")
 @login_required
-def follow_topic(request,topicid):
-    topic = get_object_or_404(Topic,topicid=topicid)
+def follow_topic(request,topicId):
+    topic = get_object_or_404(Topic,topicid=topicId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
     try:
         topicFollow = UserFollowTopic.objects.get(
@@ -315,8 +321,16 @@ def follow_topic(request,topicid):
                 user=userProfile,
                 )
         topicFollow.delete()
+        return HttpResponse(
+                json.dumps({'follows':False}),
+                content_type="application/json"
+                )
     except:
         UserFollowTopic.objects.create(
                 user=userProfile,
                 topic=topic,
+                )
+        return HttpResponse(
+                json.dumps({'follows':True}),
+                content_type="application/json"
                 )

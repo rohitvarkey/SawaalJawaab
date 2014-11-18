@@ -2,10 +2,40 @@
 {% block title%} SawaalJawaab - {{topic.name}} {%endblock%}
 {% block content %}
     <div class="container">
-    <h1 class="page-header">{{topic.name}}</h1>
+    <h1 class="page-header">{{topic.name}}
+    {% if follows %}
+            <button class="btn btn-danger" id="follow" style="float:right">Unfollow!</button></h2>
+        {%else%}
+            <button class="btn btn-primary" id="follow" style="float:right">Follow!</button></h2>
+        {%endif%}
+    </h1>
         <ul class="list-group">
         {%for question in questions %}
         <li class="list-group-item"><p><a href="/qna/questions/{{question.qid}}">{{question.explanation}}</a></p></li>
         {% endfor %}
 </div>
+<script>
+$(document).ready(function(){
+        var url = '/qna/topic/{{topic.topicid}}/follow';
+    var followButton = document.getElementById("follow");
+    followButton.onclick = function() {
+        $.get(
+            url,
+            function(data){
+                var follows = data['follows'];
+                if (follows==false)
+                {
+                    followButton.className = "btn btn-primary";
+                    followButton.textContent = "Follow";
+                }
+                else
+                {
+                    followButton.className = "btn btn-danger";
+                    followButton.textContent = "Unfollow";
+                }
+        });
+    };
+});
+</script>
+
 {%endblock%}
