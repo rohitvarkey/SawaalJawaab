@@ -3,6 +3,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.http import Http404,HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from QnA.models import *
 from QnA.forms import *
 # Create your views here.
@@ -25,7 +26,7 @@ def home(request):
         else:
             return render(request,'loginPage.html',{'failed':True})
         return render(request,'loginPage.html')
-
+@login_required
 def question_view(request,questionId):
     if request.method == 'GET':
         question = get_object_or_404(Question,qid=questionId)
@@ -57,7 +58,7 @@ def question_view(request,questionId):
                     'question_view',
                     questionId=question.qid,
                     )
-
+@login_required
 def user_profile(request,username):
     user = get_object_or_404(User,username=username)
     userProfile = get_object_or_404(UserProfile,user=user)
@@ -67,7 +68,7 @@ def user_profile(request,username):
         'user':userProfile,
         'follows':follows
         })
-
+@login_required
 def topic_view(request,topicId):
     topic = get_object_or_404(Topic,topicid=topicId)
     questionTopicList = QuestionTopic.objects.filter(topicid=topicId)
@@ -105,11 +106,11 @@ def signup(request):
         return redirect('user_profile',username=username)
     else:
         return redirect('home')
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("/")
-
+@login_required
 def add_question(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST)
@@ -131,7 +132,7 @@ def add_question(request):
     return render(request,'add_question.html', {
         'form':form
         })
-
+@login_required
 def add_comment(request,answerId):
     form = CommentForm(request.POST)
     if request.method == 'GET' or not form.is_valid():
@@ -141,7 +142,7 @@ def add_comment(request,answerId):
     body = form.cleaned_data['body']
     comment = Comment.objects.create(author=author,body=body,ansid=answer)
     return redirect("question_view",answer.quesid.qid)
-
+@login_required
 def upvote_question(request,questionId):
     question = get_object_or_404(Question,qid=questionId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -155,7 +156,7 @@ def upvote_question(request,questionId):
         UserUpvoteQuestion.objects.get(user=userProfile,question=question).delete()
     else:
         UserUpvoteQuestion.objects.create(user=userProfile,question=question)
-
+@login_required
 def downvote_question(request,questionId):
     question = get_object_or_404(Question,qid=questionId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -169,7 +170,7 @@ def downvote_question(request,questionId):
         UserDownvoteQuestion.objects.get(user=userProfile,question=question).delete()
     else:
         UserDownvoteQuestion.objects.create(user=userProfile,question=question)
-
+@login_required
 def upvote_answer(request,answerId):
     answer = get_object_or_404(Answer,answerid=answerId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -183,7 +184,7 @@ def upvote_answer(request,answerId):
         UserUpvoteAnswer.objects.get(user=userProfile,answer=answer).delete()
     else:
         UserUpvoteAnswer.objects.create(user=userProfile,answer=answer)
-
+@login_required
 def downvote_answer(request,answerId):
     answer = get_object_or_404(Answer,answerid=answerId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -197,7 +198,7 @@ def downvote_answer(request,answerId):
         UserDownvoteAnswer.objects.get(user=userProfile,answer=answer).delete()
     else:
         UserDownvoteAnswer.objects.create(user=userProfile,answer=answer)
-
+@login_required
 def upvote_comment(request,commentID):
     comment = get_object_or_404(Comment,id=commentID)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -215,7 +216,7 @@ def upvote_comment(request,commentID):
                 comment=comment).delete()
     else:
         UserUpvoteComment.objects.create(user=userProfile,comment=comment)
-
+@login_required
 def favourite_question(request,questionId):
     question = get_object_or_404(Question,qid=questionId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -226,6 +227,7 @@ def favourite_question(request,questionId):
     except:
         UserFavQuestion.objects.create(user=userProfile,question=question)
 
+@login_required
 def favourite_answer(request,answerid):
     answer = get_object_or_404(Answer,answerid=answerid)
     userProfile = get_object_or_404(UserProfile,user=request.user)
@@ -236,7 +238,7 @@ def favourite_answer(request,answerid):
     except:
         UserFavAnswer.objects.create(user=userProfile,answer=answer)
 
-@csrf_exempt
+@login_required
 def follow_user(request,username):
     print request.user
     followedUser = get_object_or_404(User,username=username)
@@ -273,7 +275,7 @@ def follow_user(request,username):
                     'followers':followers
                     }),
                     content_type="application/json")
-
+@login_required
 def follow_topic(request,topicid):
     topic = get_object_or_404(Topic,topicid=topicid)
     userProfile = get_object_or_404(UserProfile,user=request.user)
