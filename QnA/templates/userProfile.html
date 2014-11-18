@@ -1,16 +1,27 @@
 {%extends 'base.html'%}
-{%block title%} {{user.firstName}} {{user.lastName}} - SawaalJawaab{%endblock%}
+{%block title%} {{curuser.firstName}} {{curuser.lastName}} - SawaalJawaab{%endblock%}
 {%block content%}
 <div class="container">
-    <h2 class="page-header">{{user.firstName}} {{user.lastName}}
-        {% if follows %}
-        <button class="btn btn-danger" id="follow" style="float:right">Unfollow({{user.followed.all|length}})</button>
+    <h2 class="page-header">{{curuser.firstName}} {{curuser.lastName}}
+        {% if user.username = curuser.user.username %}
+        <button class="btn btn-disabled" id="followss" style="float:right">Follow({{curuser.followed.all|length}})</button>
+        {% elif follows %}
+        <button class="btn btn-danger" id="follow" style="float:right">Unfollow({{curuser.followed.all|length}})</button>
         {% else %}
-            <button class="btn btn-primary" id="follow" style="float:right">Follow({{user.followed.all|length}})</button>
+            <button class="btn btn-primary" id="follow" style="float:right">Follow({{curuser.followed.all|length}})</button>
         {% endif %}
     </h2>
+    <h4>About</h4>
     <p>{{user.about}}</p>
-
+    <h4>Topics followed!</h4>
+    <p>
+    {%if topics|length == 0 %}
+    No topics followed!
+    {%endif%}
+    {% for topic in topics%}    
+        <a href="/qna/topic/{{topic.topicid}}">{{topic.name}}</a>,
+    {%endfor%}
+    </p>
     {%for item in qna %}
     {% if item.answerid %}
     <p>Added an answer to <a href="/qna/questions/{{item.quesid.qid}}">{{item.quesid}}</a></p>
@@ -22,7 +33,7 @@
 
 <script>
 $(document).ready(function(){
-    var url = '/qna/follow/{{user.user.username}}';
+    var url = '/qna/follow/{{curuser.user.username}}';
     var followButton = document.getElementById("follow");
     followButton.onclick = function() {
         $.get(

@@ -80,8 +80,9 @@ def user_profile(request,username):
                    )
     print qna 
     return render(request,'userProfile.html',{
-        'user':userProfile,
+        'curuser':userProfile,
         'follows':follows,
+        'topics':topics,
         'qna':qna,
         })
 
