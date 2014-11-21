@@ -18,7 +18,7 @@ class QuestionForm(forms.Form):
             widget=forms.Textarea,
             required=True,
             label="Topics",
-            help_text="Enter topics seperated by a space",
+            help_text="Enter topics on each line",
             )
 
 class AnswerForm(forms.Form):

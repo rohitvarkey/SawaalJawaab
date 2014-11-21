@@ -12,7 +12,7 @@
         {% endif %}
     </h2>
     <h4>About</h4>
-    <p>{{user.about}}</p>
+    <p>{{curuser.about}}</p>
     <h4>Topics followed!</h4>
     <p>
     {%if topics|length == 0 %}
@@ -28,9 +28,9 @@
     {% endif %}
     {%for item in qna %}
     {% if item.answerid %}
-    <p>Added an answer to <a href="/qna/questions/{{item.quesid.qid}}">{{item.quesid}}</a></p>
+    <p>Added an answer to <a href="/qna/questions/{{item.quesid.qid}}">{{item.quesid.explanation}}</a></p>
     {%else%}
-    <p>Asked <a href="/qna/questions/{{item.qid}}">{{item}}</a></p>
+    <p>Asked <a href="/qna/questions/{{item.qid}}">{{item.explanation}}</a></p>
     {%endif%}
     {%endfor%}
 </div>

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title%} SawaalJawaab - Users! {%endblock%}
+{% block content %}
+    <div class="container">
+    <h1 class="page-header">Users!</h1>
+    <h3>Click on a user for more details!</h3> 
+        <ul class="list-group">
+        {%for user in users %}
+        <li class="list-group-item"><p><a href="/qna/users/{{user.user.username}}">{{user.firstName}} {{user.lastName}}</a></p></li>
+        {% endfor %}
+</div>
+{%endblock%}

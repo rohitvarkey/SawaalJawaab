@@ -154,4 +154,3 @@ CREATE TABLE `notifs` (
   CONSTRAINT `fkn4` FOREIGN KEY (`followid`) REFERENCES `user` (`loginemail`),
   CONSTRAINT `fkn5` FOREIGN KEY (`messageid`) REFERENCES `message` (`messageid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-

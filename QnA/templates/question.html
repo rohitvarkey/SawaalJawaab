@@ -7,10 +7,23 @@
         <h2 class="page-header">{{question.explanation}}
             <button class="btn btn-primary" id="answer" style="float:right">Answer!</button>
             {% if fav %}
-            <button class="btn btn-danger" id="fav" style="float:right">Unfavourite!</button></h2>
+            <button class="btn btn-danger" id="fav" style="float:right">Unfavourite!</button>
         {%else%}
-            <button class="btn btn-info" id="fav" style="float:right">Favourite!</button></h2>
+            <button class="btn btn-info" id="fav" style="float:right">Favourite!</button>
         {%endif%}
+        {% if upvoted %}
+        <button class="btn btn-disabled active" id="up" style="float:right">Upvote!({{upCount}})</button>
+        {% else %}
+        <button class="btn btn-primary" id="up" style="float:right">Upvote!({{upCount}})</button>
+        {% endif %}
+
+        {% if downvoted %}
+        <button class="btn btn-disabled active" id="down" style="float:right">Downvote!({{downCount}})</button>
+        {% else %}
+        <button class="btn btn-danger" id="down" style="float:right">Downvote!({{downCount}})</button>
+        
+        {% endif %}
+    </h2>
         <p class="question-meta"> {{question.time}} by<a href="/qna/users/{{question.author.user}}"> {{question.author.firstName}} {{question.author.lastName}}</a></p>
     <h5> Topics :
     {%if topics|length == 0 %}
@@ -80,12 +93,67 @@
                     }
             });
         };
+        var upvoteUrl = "/qna/questions/{{question.qid}}/upvote/";
+        var downvoteUrl = "/qna/questions/{{question.qid}}/downvote/";
+        var upVoteButton = document.getElementById('up');
+        var downVoteButton = document.getElementById('down');
+        upVoteButton.onclick = function() {
+            $.get(
+                upvoteUrl,
+                function(data){
+                    var upvoted = data['upvoted'];
+                    var upNo= data['upvoteNo'];
+                    var downNo= data['downvoteNo'];
+                    var hadDownvoted = data['hadDownvoted'];
+                    if (upvoted==true)
+                    {
+                        upVoteButton.className = "btn btn-disabled active";
+                        upVoteButton.textContent = "Upvote!("+upNo+")";
+                    }
+                    else
+                    {
+                        upVoteButton.className = "btn btn-primary";
+                        upVoteButton.textContent = "Upvote!("+upNo+")";
+                    }
+                    if(hadDownvoted == true)
+                    {
+                        downVoteButton.className = "btn btn-danger";
+                        downVoteButton.textContent = "Downvote!("+downNo+")";
+                    }
+            });
+        };
+            downVoteButton.onclick = function() {
+            $.get(
+                downvoteUrl,
+                function(data){
+                    var downvoted = data['downvoted'];
+                    var downNo= data['downvoteNo'];
+                    var upNo= data['upvoteNo'];
+                    var hadUpvoted = data['hadUpvoted'];
+                    if (downvoted==true)
+                    {
+                        downVoteButton.className = "btn btn-disabled active";
+                        downVoteButton.textContent = "Downvote!("+downNo+")";
+                    }
+                    else
+                    {
+                        downVoteButton.className = "btn btn-danger";
+                        downVoteButton.textContent = "Downvote!("+downNo+")";
+                    }
+                    if(hadUpvoted == true)
+                    {
+                        upVoteButton.className = "btn btn-primary";
+                        upVoteButton.textContent = "Upvote!("+upNo+")";
+                    }
+            });
+        };
+
     });
 
     </script>
 
     <style>
-    #answer {
+    .btn {
         margin-left:5px;
     }
     </style>

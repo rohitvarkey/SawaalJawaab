@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title%} SawaalJawaab - Topics! {%endblock%}
+{% block content %}
+    <div class="container">
+    <h1 class="page-header">Search results!</h1>
+    <h3>Users</h3> 
+        <ul class="list-group">
+        {%for user in users %}
+        <li class="list-group-item"><p><a href="/qna/users/{{user.user.username}}">{{user.firstName}} {{user.lastName}}</a></p></li>
+        {% endfor %}
+    {% if users|length == 0 %} 
+        <p> No users by this name! </p>
+        {%endif%}
+
+    <h3>Topics</h3> 
+        <ul class="list-group">
+        {%for topic in topics %}
+        <li class="list-group-item"><p><a href="/qna/topic/{{topic.topicid}}">{{topic.name}}</a></p></li>
+        {% endfor %}
+        {% if topics|length == 0 %} 
+        <p> No topics to show! </p>
+        {%endif%}
+
+ <h3>Questions</h3> 
+        <ul class="list-group">
+        {%for question in questions %}
+        <li class="list-group-item"><p><a href="/qna/questions/{{question.qid}}">{{question.explanation}}</a></p></li>
+        {% endfor %}
+    {% if questions|length == 0 %} 
+        <p> No questions to show! </p>
+        {%endif%}
+
+</div>
+{%endblock%}

@@ -38,7 +38,11 @@ def question_view(request,questionId):
         form = AnswerForm()
         commentForm = CommentForm()
         userProf = UserProfile.objects.get(user=request.user)
-        fav = UserFavQuestion.objects.filter(user=userProf).exists()
+        fav = UserFavQuestion.objects.filter(user=userProf,question=question).exists()
+        upvoted = UserUpvoteQuestion.objects.filter(user=userProf,question=question).exists()
+        upCount = UserUpvoteQuestion.objects.filter(question=question).count()
+        downCount = UserDownvoteQuestion.objects.filter(question=question).count()
+        downvoted = UserDownvoteQuestion.objects.filter(user=userProf,question=question).exists()
         for answer in answers:
             answer.comments = Comment.objects.filter(ansid=answer.answerid)
         return render(request,'question.html',{'question':question,
@@ -47,6 +51,10 @@ def question_view(request,questionId):
                                                'form':form,
                                                'commentForm':commentForm,
                                                'fav':fav,
+                                               'upvoted':upvoted,
+                                               'downvoted':downvoted,
+                                               'upCount':upCount,
+                                               'downCount':downCount,
                                                })
     else:
         form = AnswerForm(request.POST)
@@ -78,7 +86,6 @@ def user_profile(request,username):
                    key=lambda instance: instance.timeCreated,
                    reverse=True
                    )
-    print qna 
     return render(request,'userProfile.html',{
         'curuser':userProfile,
         'follows':follows,
@@ -176,30 +183,59 @@ def add_comment(request,answerId):
 def upvote_question(request,questionId):
     question = get_object_or_404(Question,qid=questionId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
+    hadDownvoted = False
     try:
         #Checking for downvote and resetting in case.
         downvote=UserDownvoteQuestion.objects.get(user=userProfile,question=question)
         downvote.delete()
+        hadDownvoted = True
     except:
         pass
     if UserUpvoteQuestion.objects.filter(user=userProfile,question=question).exists():
         UserUpvoteQuestion.objects.get(user=userProfile,question=question).delete()
+        upvoted = False
     else:
         UserUpvoteQuestion.objects.create(user=userProfile,question=question)
+        upvoted = True
+    upvoteNo = UserUpvoteQuestion.objects.filter(question=question).count()
+    downvoteNo = UserDownvoteQuestion.objects.filter(question=question).count()
+    return HttpResponse(json.dumps({
+        'hadDownvoted':hadDownvoted,
+        'upvoted':upvoted,
+        'upvoteNo':upvoteNo,
+        'downvoteNo':downvoteNo,
+        }),
+        content_type="application/json"
+        )
+    
 @login_required
 def downvote_question(request,questionId):
     question = get_object_or_404(Question,qid=questionId)
     userProfile = get_object_or_404(UserProfile,user=request.user)
+    hadUpvoted = False
     try:
         #Checking for upvote and resetting in case.
         upvote=UserUpvoteQuestion.objects.get(user=userProfile,question=question)
         upvote.delete()
+        hadUpvoted = True
     except:
         pass
     if UserDownvoteQuestion.objects.filter(user=userProfile,question=question).exists():
         UserDownvoteQuestion.objects.get(user=userProfile,question=question).delete()
+        downvoted=False
     else:
         UserDownvoteQuestion.objects.create(user=userProfile,question=question)
+        downvoted = True
+    upvoteNo = UserUpvoteQuestion.objects.filter(question=question).count()
+    downvoteNo = UserDownvoteQuestion.objects.filter(question=question).count()
+    return HttpResponse(json.dumps({
+        'hadUpvoted':hadUpvoted,
+        'downvoted':downvoted,
+        'downvoteNo':downvoteNo,
+        'upvoteNo':upvoteNo,
+        }),
+        content_type="application/json")
+
 @login_required
 def upvote_answer(request,answerId):
     answer = get_object_or_404(Answer,answerid=answerId)
@@ -334,3 +370,36 @@ def follow_topic(request,topicId):
                 json.dumps({'follows':True}),
                 content_type="application/json"
                 )
+
+@login_required
+def feed_view(request):
+    profile = UserProfile.objects.get(user=request.user)
+    followedTopics = UserFollowTopic.objects.filter(user=profile)
+    favQuestions = UserFavQuestion.objects.filter(user=profile)
+    return render(request,"feed.html",{
+        'favQuestions':favQuestions,
+        })
+
+@csrf_exempt
+def search_view(request):
+    if request.method == 'POST':
+        key = request.POST["key"]
+        topics = Topic.objects.filter(name__contains=key).order_by('name')
+        questions = Question.objects.filter(explanation__contains=key).order_by('-timeCreated')
+        users = UserProfile.objects.filter(firstName__contains=key).order_by('firstName')
+        print key,topics,questions
+        return render(request,
+                "results.html",
+                {'topics':topics,
+                'questions':questions,
+                'users':users,
+                })
+
+def all_users_view(request):
+    allUsers = UserProfile.objects.all().order_by('firstName')
+    return render(request,
+            "allUsers.html",
+            {
+                'users':allUsers
+            }
+            )

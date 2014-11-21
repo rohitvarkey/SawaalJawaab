@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title%} SawaalJawaab - Feed {%endblock%}
+{% block content %}
+    <div class="container">
+    <h1 class="page-header">Feed!
+       </h1>
+        <ul class="list-group">
+        {%for question in favQuestions %}
+        <li class="list-group-item"><p><a href="/qna/questions/{{question.question.qid}}">{{question.question.explanation}}</a></p></li>
+        {% endfor %}
+</div>
+{% endblock %}
